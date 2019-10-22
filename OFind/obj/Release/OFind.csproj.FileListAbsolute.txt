@@ -1,0 +1,11 @@
+C:\Users\Антон\Documents\GitHub\OFind\OFind\bin\Release\OFind.exe.config
+C:\Users\Антон\Documents\GitHub\OFind\OFind\bin\Release\OFind.exe
+C:\Users\Антон\Documents\GitHub\OFind\OFind\bin\Release\OFind.pdb
+C:\Users\Антон\Documents\GitHub\OFind\OFind\obj\Release\OFind.csprojAssemblyReference.cache
+C:\Users\Антон\Documents\GitHub\OFind\OFind\obj\Release\OFind.MainForm.resources
+C:\Users\Антон\Documents\GitHub\OFind\OFind\obj\Release\OFind.Properties.Resources.resources
+C:\Users\Антон\Documents\GitHub\OFind\OFind\obj\Release\OFind.ViewWindow.resources
+C:\Users\Антон\Documents\GitHub\OFind\OFind\obj\Release\OFind.csproj.GenerateResource.cache
+C:\Users\Антон\Documents\GitHub\OFind\OFind\obj\Release\OFind.csproj.CoreCompileInputs.cache
+C:\Users\Антон\Documents\GitHub\OFind\OFind\obj\Release\OFind.exe
+C:\Users\Антон\Documents\GitHub\OFind\OFind\obj\Release\OFind.pdb
