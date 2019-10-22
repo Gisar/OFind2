@@ -20,3 +20,13 @@ C:\Users\Антон\Documents\GitHub\OFind\OFind\obj\Debug\OFind.csproj.Generate
 C:\Users\Антон\Documents\GitHub\OFind\OFind\obj\Debug\OFind.csproj.CoreCompileInputs.cache
 C:\Users\Антон\Documents\GitHub\OFind\OFind\obj\Debug\OFind.exe
 C:\Users\Антон\Documents\GitHub\OFind\OFind\obj\Debug\OFind.pdb
+G:\GitHub\OFind2\OFind\bin\Debug\OFind.exe.config
+G:\GitHub\OFind2\OFind\bin\Debug\OFind.exe
+G:\GitHub\OFind2\OFind\bin\Debug\OFind.pdb
+G:\GitHub\OFind2\OFind\obj\Debug\OFind.csprojAssemblyReference.cache
+G:\GitHub\OFind2\OFind\obj\Debug\OFind.MainForm.resources
+G:\GitHub\OFind2\OFind\obj\Debug\OFind.Properties.Resources.resources
+G:\GitHub\OFind2\OFind\obj\Debug\OFind.ViewWindow.resources
+G:\GitHub\OFind2\OFind\obj\Debug\OFind.csproj.GenerateResource.cache
+G:\GitHub\OFind2\OFind\obj\Debug\OFind.exe
+G:\GitHub\OFind2\OFind\obj\Debug\OFind.pdb

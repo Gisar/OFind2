@@ -12,11 +12,12 @@ namespace OFind
 {
     public partial class ViewWindow : Form
     {
-        public ViewWindow(List<string> file)
+        public ViewWindow(string file)
         {
             InitializeComponent();
 
-            mainTextBox.Text = string.Join("", file);
+            //mainTextBox.Text = string.Join("", file);
+            mainTextBox.Text = file;
         }
 
         private void ViewWindow_Load(object sender, EventArgs e)

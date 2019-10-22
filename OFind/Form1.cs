@@ -14,12 +14,15 @@ namespace OFind
 {
     public partial class MainForm : Form
     {
+        public static string generatedText = "";
+
         public MainForm()
         {
             InitializeComponent();
-            string version = "v2.3";
+            string version = "v2.5";
             verstionLabel.Text = version;
             this.Text = this.Text + " - " + version;
+            HidePBar();
         }
 
         public bool[] GetBoxes()
@@ -35,13 +38,67 @@ namespace OFind
             return checkBoxes;
         }
 
-        public static List<string> SearchSql(string path, bool[] boxes)
+        public void ShowPBar()
+        {
+            pBar.Visible = true;
+            pBarLabel.Visible = true;
+        }
+        public void HidePBar()
+        {
+            pBar.Visible = false;
+            pBarLabel.Visible = false;
+        }
+        public void SetupPBar(int minVal, int maxVal)
+        {
+            pBar.Value = 0;
+            pBarLabel.Text = String.Format("{0}%", 0);
+            pBar.Minimum = minVal;
+            pBar.Maximum = maxVal;
+        }
+        public void ProcessPBar(int progress)
+        {
+            if (progress <= pBar.Maximum)
+            {
+                pBar.Value = progress;
+                pBarLabel.Text = String.Format("{0}%", progress);
+            }
+        }
+        public void DeactivateUI()
+        {
+            procCheck.Enabled = false;
+            FuncCheck.Enabled = false;
+            viewCheck.Enabled = false;
+            triggerCheck.Enabled = false;
+            tableCheck.Enabled = false;
+            indexCheck.Enabled = false;
+            showFolderCheck.Enabled = false;
+            SearchButton.Enabled = false;
+            clearCheckBtn.Enabled = false;
+            setCheckBtn.Enabled = false;
+        }
+        public void ActivateUI()
+        {
+            procCheck.Enabled = true;
+            FuncCheck.Enabled = true;
+            viewCheck.Enabled = true;
+            triggerCheck.Enabled = true;
+            tableCheck.Enabled = true;
+            indexCheck.Enabled = true;
+            showFolderCheck.Enabled = true;
+            SearchButton.Enabled = true;
+            clearCheckBtn.Enabled = true;
+            setCheckBtn.Enabled = true;
+        }
+        public List<string> SearchSql(string path, bool[] boxes)
         {
             string[] FileList = SearchFiles(path, "sql");
             List<string> ProcList = new List<string>();
+            //Устанавливаем минмакс прогрессбара
+            //SetupPBar(0, FileList.Length);
             for (int j = 0; j < FileList.Length; j++)
             {
                 ProcList.Add(ParseFiles(FileList[j], "create", "alter", boxes));
+                bgWorker.ReportProgress((j*100)/FileList.Length);
             }
             return ProcList;
         }
@@ -209,7 +266,7 @@ namespace OFind
             }
             return input;
         }
-        public static List<string> CompleteParce(string path, bool[] boxes)
+        public List<string> CompleteParce(string path, bool[] boxes)
         {
             //Ищем процедуры
             List<string> names = SearchSql(path, boxes);
@@ -231,34 +288,42 @@ namespace OFind
         {
             string path = fromFolderTextBox.Text;
             string toFile = toFileTextBox.Text;
-            //boxes = GetBoxes();
-            bool[] boxes = GetBoxes();
-
-            if (
-                !string.IsNullOrEmpty(path)
-                && Directory.Exists(path)
-                && !string.IsNullOrEmpty(toFile) 
-                && File.Exists(toFile)
-                )
+            if (!string.IsNullOrEmpty(path))
             {
-                List<string> result = CompleteParce(path, boxes);
-                string generatedText = string.Join("", result);
-                File.WriteAllText(toFile, generatedText);
-                MessageBox.Show("Поиск завершен. Результаты записаны в файл:" + Environment.NewLine + toFile, "Внимание");
-                if (boxes[6])
+                if (Directory.Exists(path))
                 {
-                    Process.Start(Path.GetDirectoryName(toFile));
+                    if(!string.IsNullOrEmpty(toFile) && File.Exists(toFile))
+                    {
+                        if (!bgWorker.IsBusy)
+                        {
+                            //Disable checkboxes
+                            DeactivateUI();
+                            SetupPBar(0, 100);
+                            ShowPBar();
+                            bgWorker.RunWorkerAsync();
+                        }
+                    }
+                    else if (string.IsNullOrEmpty(toFile))
+                    {
+                        //Disable checkboxes
+                        DeactivateUI();
+                        SetupPBar(0, 100);
+                        ShowPBar();
+                        bgWorker.RunWorkerAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Указанный файл не существует", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
-            }
-            else if (!string.IsNullOrEmpty(path) && string.IsNullOrEmpty(toFile))
-            {
-                List<string> result = CompleteParce(path, boxes);
-                ViewWindow window = new ViewWindow(result);
-                window.Show();
+                else
+                {
+                    MessageBox.Show("Указанный путь не существует", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             else
             {
-                MessageBox.Show("Поиск запущен не был.", "Внимание");
+                MessageBox.Show("Поиск запущен не был. \nУкажите путь к папке.", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -332,6 +397,48 @@ namespace OFind
         private void ToolTip1_Popup(object sender, PopupEventArgs e)
         {
 
+        }
+
+        private void bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            string toFile = toFileTextBox.Text;
+            bool[] boxes = GetBoxes();
+            if (!string.IsNullOrEmpty(toFile))
+            {
+                if (File.Exists(toFile))
+                {
+                    File.WriteAllText(toFile, generatedText);
+                    MessageBox.Show("Поиск завершен. Результаты записаны в файл:" + Environment.NewLine + toFile, "Внимание");
+                    if (boxes[6])
+                    {
+                        Process.Start(Path.GetDirectoryName(toFile));
+                    }
+                }
+            }
+            else
+            {
+                ViewWindow window = new ViewWindow(generatedText);
+                window.Show();
+            }
+            HidePBar();
+            //Activate checkboxes
+            ActivateUI();
+        }
+
+        private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            ProcessPBar(e.ProgressPercentage);
+            //pBar.Value += e.ProgressPercentage;
+        }
+
+        private void bgWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            //ShowPBar();
+            generatedText = "";
+            string path = fromFolderTextBox.Text;
+            bool[] boxes = GetBoxes();
+            List<string> result = CompleteParce(path, boxes);
+            generatedText = string.Join("", result);
         }
     }
 }
